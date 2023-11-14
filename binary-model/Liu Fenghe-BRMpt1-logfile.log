@@ -1,0 +1,511 @@
+--------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\lfh\Desktop\umich summer\categorical data\homework\assig2\
+> lfh-assig2log.log
+  log type:  text
+ opened on:  27 Jul 2021, 03:03:51
+
+. 
+. // Program:   lfh-assig2.do
+. // Task:      Categorical Data Analysis assignment2
+. // Project:   ICPSR-CDA
+. // Author:    Liu Fenghe
+. // Date:      27th July 2021
+. 
+. // program setup:
+. version 17                  //version control
+
+. clear all                   //removes data, value, matrices, results, etc. fro
+> m memory
+
+. set linesize 80             //specifies screen size width & prevents wrapping
+
+. matrix drop _all
+
+. set more off
+
+. 
+. //1.1b) Load the data.
+. usecda cda_addhealth4
+Opening as dataset
+(Add Health extract for ICPSR)
+
+. save "cda_addhealth4-change.dta", replace
+file cda_addhealth4-change.dta saved
+
+. use "cda_addhealth4-change.dta", clear
+(Add Health extract for ICPSR)
+
+. 
+. //1.1c) Examine the Data and Select Variables. 
+. codebook, compact            
+
+Variable    Obs Unique      Mean      Min       Max  Label
+--------------------------------------------------------------------------------
+caseid     2145   2145         .        .         .  Respondent ID
+gswgt1     2145   1112  3389.418   311.18  18383.29  Grand sample weight, wave1
+cluster2   2145    132  183.2783      102       472  Sample cluster, stratum 2
+age        2144     98  16.07669  11.4167   20.6667  Respondent's age
+sex        2145      2  1.508625        1         2  Biological Sex
+male       2145      2  .4913753        0         1  Male? (1=yes)
+female     2145      2  .5086247        0         1  Female? (1=yes)
+hispanic   2145      2  .1109557        0         1  R is Hispanic.
+white      2145      2  .5780886        0         1  R is non-hispanic white.
+black      2145      2   .218648        0         1  R is non-hispanic black.
+asian      2145      2  .0331002        0         1  R is non-hispanic asian.
+othrace    2145      2  .0592075        0         1  R is non-hispanic other ...
+bornUS     1706      2  .9232122        0         1  Born in the US? (1=yes)
+hobbies    2144      4   1.45709        0         3  Do hobbies-How many time...
+videos     2144      4  2.371269        0         3  Watch TV-How many times ...
+skating    2144      4  .6170709        0         3  Skating/Cycling-How many...
+sport      2144      4  1.382929        0         3  Play sports-How many tim...
+exercise   2144      4  1.619869        0         3  Exercise-How many times ...
+friends    2144      4  1.960354        0         3  Hang w/friends-How many ...
+hrstv      2138     65  16.22451        0        99  Hrs TV per week
+hrsvideo   2138     40  4.537886        0        99  Hrs watch videos per week
+hrscomp    2142     36  2.752101        0        96  Hrs play computer games ...
+hrsradio   2141     57  16.81177        0        99  Hrs listen to radio per ...
+brthctrl   1475      6  4.120678        1         6  How sure could stop to u...
+intlgnce   2138      6  3.871375        1         6  How intelligent are you?
+bothered   2142      4  .4887955        0         3  Bothered-How often in pstwk
+appetite   2143      4  .4475035        0         3  Poor appetite-How often ...
+blues      2142      4  .3776844        0         3  Had the blues-How often ...
+goodas     2143      4  1.081195        0         3  As good as others-How of...
+mindfoc    2143      4  .8180121        0         3  Trouble focusing-How oft...
+depressed  2143      4  .5039664        0         3  Felt depressed-How often...
+tired      2143      4  .7200187        0         3  Too tired to do things-H...
+hopeful    2141      4  1.168146        0         3  Hopeful about future-How...
+failure    2143      4  .1941204        0         3  Life a failure-How often...
+fearful    2142      4  .3062558        0         3  Felt fearful-How often i...
+happy      2143      4  .8665422        0         3  Felt happy-How often in ...
+talkless   2143      4  .5832944        0         3  Talked LT usual-How ofte...
+lonely     2143      4  .4643024        0         3  Felt lonely-How often in...
+unfrndly   2143      4  .4017732        0         3  People unfriendly to you...
+enjlife    2143      4  .7783481        0         3  Enjoyed life-How often i...
+sad        2143      4  .5501633        0         3  Felt sad-How often in ps...
+dislike    2143      4  .4162389        0         3  Felt people dislike you-...
+getstart   2142      4   .624183        0         3  Hard to start doing thin...
+living     2143      4  .1488567        0         3  Life not worth living-Ho...
+depress    2139     44  10.92052        0        47  Depression scale
+momeduc    2003     12   5.70694        1        12  Mom education level
+dadeduc    1510     12  5.910596        1        12  Dad education level
+momcoll    1930      2  .2953368        0         1  Mom college grad? (1=yes)
+dadcoll    1439      2  .3419041        0         1  Dad college grad? (1=yes)
+momhsgrd   1930      2   .853886        0         1  Mom HS grad? (1=yes)
+dadhsgrd   1439      2  .8471161        0         1  Dad HS grad? (1=yes)
+mombrnUS   2019      2   .875681        0         1  Mom born in US? (1=yes)
+dadbrnUS   1527      2  .8506876        0         1  Dad born in US? (1=yes)
+momcare    2022      5  4.849159        1         5  How much does mom care a...
+dadcare    1529      5  4.730543        1         5  How much does dad care a...
+momshop    2019      2  .7216444        0         1  Gone shopping w/mom in p...
+momsport   2019      2  .0896483        0         1  Played a sport w/mom in ...
+momrel     2019      2  .3878158        0         1  Went to relig svc w/mom ...
+momlife    2019      2  .4839029        0         1  Talked about life w/mom ...
+mommovie   2019      2  .2491332        0         1  Went to movie w/mom in p...
+momprob    2019      2   .368004        0         1  Discussed personal prob ...
+mombehav   2019      2  .3204557        0         1  Argued about behavior w/...
+momgrades  2019      2  .6250619        0         1  Talked about grades w/mo...
+momproj    2019      2  .1287766        0         1  Talked about school proj...
+momoth     2019      2   .509163        0         1  Talked other school thin...
+momnone    2019      2  .0208024        0         1  Didn't do any of these w...
+actsmom    2019      8  2.570084        0         7  Activities with mom: count
+dadshop    1529      2  .2576848        0         1  Gone shopping w/dad in p...
+dadsport   1529      2  .2982341        0         1  Played a sport w/dad in ...
+dadrel     1529      2  .3165468        0         1  Went to relig svc w/dad ...
+dadlife    1529      2  .2786135        0         1  Talked about life w/dad ...
+dadmovie   1529      2  .2321779        0         1  Went to movie w/dad in p...
+dadprob    1529      2  .1935906        0         1  Discussed personal prob ...
+dadbehav   1529      2  .2432963        0         1  Argued about behavior w/...
+dadgrades  1529      2  .5225638        0         1  Talked about grades w/da...
+dadproj    1529      2  .1059516        0         1  Talked about school proj...
+dadoth     1529      2  .4310007        0         1  Talked other school thin...
+dadnone    1529      2  .0961413        0         1  Didn't do any of these w...
+actsdad    1529      8  1.920209        0         7  Activities with dad: count
+momrshp    2019      5   4.31154        1         5  Satisfied with rshp w/mom
+dadrshp    1527      5  4.092993        1         5  Satisfied with rshp w/dad
+goodqual   2139      5   4.27209        1         5  You have a lot of good q...
+proud      2141      5  4.304064        1         5  You have a lot to be pro...
+likeself   2141      5  4.011677        1         5  You like yourself as you...
+doright    2141      5  3.754787        1         5  You do everything just r...
+accepted   2140      5  4.066822        1         5  You feel socially accepted
+loved      2141      5  4.296123        1         5  You feel loved and wanted
+esteem     2138     22  24.70907        6        30  Self-esteem scale
+abpledge   2111      2  .1255329        0         1  Taken virginity pledge? ...
+havesex    2116      2  .4026465        0         1  Ever have sex? (1=yes)
+smokreg     947      2  .4709609        0         1  Ever smoke cigs regularl...
+dayssmok    932     31  10.34013        0        30  How many days smoke in p...
+numcigs     578     27  7.093426        0        60  How many cigs/day in pas...
+numdrinks   970     35   5.61134        1        90  How many drinks each tim...
+daysdrink  1162      7  2.974182        1         7  How many days drink alco...
+drink5      981      7   2.43527        1         7  How many days drink 5+ i...
+daysdrunk   980      7  2.370408        1         7  How many days got drunk ...
+potlife     572     57  45.87063        1       900  How much used pot in lif...
+potlstmo    596     39  9.337248        0       800  How much used pot in lstmo?
+graffiti   2126      4  .1326435        0         3  Paint graffiti-How many ...
+damage     2124      4  .2547081        0         3  Damage property-How many...
+lieprnts   2123      4  .9232219        0         3  Lie about whereabouts-Ho...
+shoplift   2123      4  .3787094        0         3  Shoplift-How many times ...
+fight      2125      4  .4512941        0         3  Serious physical fight-H...
+injureoth  2124      4  .2396422        0         3  Seriously injure someone...
+runaway    2130      4  .1131455        0         3  Run away from home-How m...
+stealcar   2128      4  .1461466        0         3  Steal a car-How many tim...
+stealGT50  2130      4  .0779343        0         3  Steal worth >$50-How man...
+burglar    2131      4   .080244        0         3  Burglarize-How many time...
+weapon     2131      4  .0581886        0         3  Use/thrtn w/a weapon-How...
+selldrugs  2129      4  .1531235        0         3  Sell drugs-How many time...
+stealLT50  2129      4  .3118835        0         3  Steal worth <$50-How man...
+grpfight   2129      4  .2475341        0         3  Group fight-How many tim...
+rowdy      2128      4   .656015        0         3  Loud in public-How many ...
+delinq     2108     16  2.759962        0        15  Number of delinquency acts
+adultcare  2139      6  4.375877        1         6  Adults care about you?
+tchrcare   2140      6  3.566822        1         6  Teachers care about you?
+prntscare  2140      6  4.806075        1         6  Parents care about you?
+frndscare  2139      6  4.263207        1         6  Friends care about you?
+famundrst  2138      6  3.630028        1         6  Family understand you?
+leavehome  2139      6  2.234222        1         6  Want to leave home?
+famfun     2139      6  3.752221        1         6  Family has fun together?
+famattn    2138      6  3.947615        1         6  Family pays attention to...
+relig      2107     27  11.40721        0        28  What is your religion?
+relProt    2107      2  .5752254        0         1  Protestant? (1=yes)
+relCath    2107      2  .2263882        0         1  Catholic? (1=yes)
+relJew     2107      2   .010916        0         1  Jewish? (yes=1)
+relOth     2107      2  .0745135        0         1  Other religion? (1=yes)
+relNone    2107      2  .1129568        0         1  No religion? (1=yes)
+service    1866      4  3.013934        1         4  Attend relig svc - How o...
+pray       1869      5  3.932049        1         5  How often do you pray?
+wantcoll   2132      5  4.424953        1         5  How much want to go to c...
+likelycol  2130      5  4.142254        1         5  How likely will attend c...
+AHvocab    2060     89  100.9286       16       137  AH PictureVocab test-sta...
+RAWvocab   2060     66  65.08107        4        87  AH PictureVocab test-raw...
+--------------------------------------------------------------------------------
+
+. keep havesex age dadcoll depress
+
+. codebook, compact         
+
+Variable    Obs Unique      Mean      Min      Max  Label
+--------------------------------------------------------------------------------
+age        2144     98  16.07669  11.4167  20.6667  Respondent's age
+depress    2139     44  10.92052        0       47  Depression scale
+dadcoll    1439      2  .3419041        0        1  Dad college grad? (1=yes)
+havesex    2116      2  .4026465        0        1  Ever have sex? (1=yes)
+--------------------------------------------------------------------------------
+
+. 
+. //1.1d) Drop cases with missing data and verify.  
+. misschk,        gen(m) 
+
+Variables examined for missing values
+
+   #  Variable        # Missing   % Missing
+--------------------------------------------
+   1  age                   1         0.0
+   2  depress               6         0.3
+   3  dadcoll             706        32.9
+   4  havesex              29         1.4
+
+Missing for |
+      which |
+ variables? |      Freq.     Percent        Cum.
+------------+-----------------------------------
+       1234 |          1        0.05        0.05
+       _23_ |          3        0.14        0.19
+       _2__ |          2        0.09        0.28
+       __34 |          9        0.42        0.70
+       __3_ |        693       32.31       33.01
+       ___4 |         19        0.89       33.89
+       ____ |      1,418       66.11      100.00
+------------+-----------------------------------
+      Total |      2,145      100.00
+
+Missing for |
+   how many |
+ variables? |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      1,418       66.11       66.11
+          1 |        714       33.29       99.39
+          2 |         12        0.56       99.95
+          4 |          1        0.05      100.00
+------------+-----------------------------------
+      Total |      2,145      100.00
+
+. tab             mnumber
+
+Missing for |
+   how many |
+ variables? |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      1,418       66.11       66.11
+          1 |        714       33.29       99.39
+          2 |         12        0.56       99.95
+          4 |          1        0.05      100.00
+------------+-----------------------------------
+      Total |      2,145      100.00
+
+. keep if         mnumber==0
+(727 observations deleted)
+
+. 
+. //1.2) Describe the data
+. codebook havesex age dadcoll depress, compact            
+
+Variable    Obs Unique      Mean      Min      Max  Label
+--------------------------------------------------------------------------------
+havesex    1418      2   .342031        0        1  Ever have sex? (1=yes)
+age        1418     95  16.04202  11.5833  20.6667  Respondent's age
+dadcoll    1418      2  .3434415        0        1  Dad college grad? (1=yes)
+depress    1418     41  10.36812        0       46  Depression scale
+--------------------------------------------------------------------------------
+
+. sum havesex age dadcoll depress
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+     havesex |      1,418     .342031    .4745573          0          1
+         age |      1,418    16.04202     1.73262    11.5833    20.6667
+     dadcoll |      1,418    .3434415    .4750248          0          1
+     depress |      1,418    10.36812    6.836937          0         46
+
+. 
+. //1.3) Binary logit model. 
+. logit havesex age i.dadcoll depress
+
+Iteration 0:   log likelihood = -910.88557  
+Iteration 1:   log likelihood = -780.66389  
+Iteration 2:   log likelihood = -777.45377  
+Iteration 3:   log likelihood =  -777.4439  
+Iteration 4:   log likelihood =  -777.4439  
+
+Logistic regression                                     Number of obs =  1,418
+                                                        LR chi2(3)    = 266.88
+                                                        Prob > chi2   = 0.0000
+Log likelihood = -777.4439                              Pseudo R2     = 0.1465
+
+------------------------------------------------------------------------------
+     havesex | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         age |   .5369785   .0409223    13.12   0.000     .4567722    .6171847
+             |
+     dadcoll |
+      1_Yes  |  -.6079945   .1347437    -4.51   0.000    -.8720873   -.3439016
+     depress |   .0378402   .0088901     4.26   0.000      .020416    .0552645
+       _cons |  -9.613378   .6805264   -14.13   0.000    -10.94719   -8.279571
+------------------------------------------------------------------------------
+
+. 
+. //1.4) Computing factor change coefficients. 
+. listcoef, help
+
+logit (N=1418): Factor change in odds 
+
+  Odds of: 1_Yes vs 0_No
+
+------------------------------------------------------------------------
+             |         b        z    P>|z|       e^b   e^bStdX     SDofX
+-------------+----------------------------------------------------------
+         age |    0.5370   13.122    0.000     1.711     2.535     1.733
+             |
+     dadcoll |
+      1_Yes  |   -0.6080   -4.512    0.000     0.544     0.749     0.475
+     depress |    0.0378    4.256    0.000     1.039     1.295     6.837
+    constant |   -9.6134  -14.126    0.000         .         .         .
+------------------------------------------------------------------------
+       b = raw coefficient
+       z = z-score for test of b=0
+   P>|z| = p-value for z-test
+     e^b = exp(b) = factor change in odds for unit increase in X
+ e^bStdX = exp(b*SD of X) = change in odds for SD increase in X
+   SDofX = standard deviation of X
+
+. 
+. //1.7a) Compute predicted probabilities when dadcoll = 1 and others at mean
+. margins, at(dadcoll = 1) atmeans
+
+Adjusted predictions                                     Number of obs = 1,418
+Model VCE: OIM
+
+Expression: Pr(havesex), predict()
+At: age     = 16.04202 (mean)
+    dadcoll =        1
+    depress = 10.36812 (mean)
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+       _cons |   .2288492   .0202808    11.28   0.000     .1890996    .2685988
+------------------------------------------------------------------------------
+
+. 
+. //1.7b) Compute predicted probabilities when dadcoll = 0 and others at mean
+. margins, at(dadcoll = 0) atmeans
+
+Adjusted predictions                                     Number of obs = 1,418
+Model VCE: OIM
+
+Expression: Pr(havesex), predict()
+At: age     = 16.04202 (mean)
+    dadcoll =        0
+    depress = 10.36812 (mean)
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+       _cons |   .3527835   .0173627    20.32   0.000     .3187532    .3868138
+------------------------------------------------------------------------------
+
+. 
+. //1.7c) Calculate the factor change coefficient for B using these values
+. display ((.2288492/(1-.2288492))/(.3527835 /(1-.3527835))) 
+.54444172
+
+. 
+. //1.7d) Repeat steps (a)-(c) holding other variables at other values.
+. margins, at(dadcoll = 1 depress = 47 age = 20.66)  // when B = 1
+
+Adjusted predictions                                     Number of obs = 1,418
+Model VCE: OIM
+
+Expression: Pr(havesex), predict()
+At: age     = 20.66
+    dadcoll =     1
+    depress =    47
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+       _cons |   .9340784   .0231556    40.34   0.000     .8886943    .9794625
+------------------------------------------------------------------------------
+
+. margins, at(dadcoll = 0 depress = 47 age = 20.66)  // when B = 0
+
+Adjusted predictions                                     Number of obs = 1,418
+Model VCE: OIM
+
+Expression: Pr(havesex), predict()
+At: age     = 20.66
+    dadcoll =     0
+    depress =    47
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+       _cons |   .9629983   .0130302    73.91   0.000     .9374597     .988537
+------------------------------------------------------------------------------
+
+. display ((0.9340784/(1-0.9340784)) / (0.9629983/(1-0.9629983))) 
+.54444216
+
+. 
+. //1.8) logit 
+. quietly logit havesex age i.dadcoll depress
+
+. estimates store estlogit
+
+. listcoef, std help
+
+logit (N=1418): Unstandardized and standardized estimates 
+
+  Observed SD:  0.4746
+    Latent SD:  2.0978
+
+-------------------------------------------------------------------------------
+             |         b        z    P>|z|    bStdX    bStdY   bStdXY     SDofX
+-------------+-----------------------------------------------------------------
+         age |    0.5370   13.122    0.000    0.930    0.256    0.444     1.733
+             |
+     dadcoll |
+      1_Yes  |   -0.6080   -4.512    0.000   -0.289   -0.290   -0.138     0.475
+     depress |    0.0378    4.256    0.000    0.259    0.018    0.123     6.837
+    constant |   -9.6134  -14.126    0.000        .        .        .         .
+-------------------------------------------------------------------------------
+       b = raw coefficient
+       z = z-score for test of b=0
+   P>|z| = p-value for z-test
+   bStdX = x-standardized coefficient
+   bStdY = y-standardized coefficient
+  bStdXY = fully standardized coefficient
+   SDofX = standard deviation of X
+
+. probit havesex age i.dadcoll depress
+
+Iteration 0:   log likelihood = -910.88557  
+Iteration 1:   log likelihood = -778.10364  
+Iteration 2:   log likelihood = -777.31266  
+Iteration 3:   log likelihood =  -777.3124  
+Iteration 4:   log likelihood =  -777.3124  
+
+Probit regression                                       Number of obs =  1,418
+                                                        LR chi2(3)    = 267.15
+                                                        Prob > chi2   = 0.0000
+Log likelihood = -777.3124                              Pseudo R2     = 0.1466
+
+------------------------------------------------------------------------------
+     havesex | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         age |   .3187626   .0232612    13.70   0.000     .2731716    .3643536
+             |
+     dadcoll |
+      1_Yes  |  -.3624221   .0795884    -4.55   0.000    -.5184126   -.2064316
+     depress |   .0224663   .0053455     4.20   0.000     .0119893    .0329433
+       _cons |  -5.709067   .3820814   -14.94   0.000    -6.457932   -4.960201
+------------------------------------------------------------------------------
+
+. listcoef, std help
+
+probit (N=1418): Unstandardized and standardized estimates 
+
+  Observed SD:  0.4746
+    Latent SD:  1.1797
+
+-------------------------------------------------------------------------------
+             |         b        z    P>|z|    bStdX    bStdY   bStdXY     SDofX
+-------------+-----------------------------------------------------------------
+         age |    0.3188   13.704    0.000    0.552    0.270    0.468     1.733
+             |
+     dadcoll |
+      1_Yes  |   -0.3624   -4.554    0.000   -0.172   -0.307   -0.146     0.475
+     depress |    0.0225    4.203    0.000    0.154    0.019    0.130     6.837
+    constant |   -5.7091  -14.942    0.000        .        .        .         .
+-------------------------------------------------------------------------------
+       b = raw coefficient
+       z = z-score for test of b=0
+   P>|z| = p-value for z-test
+   bStdX = x-standardized coefficient
+   bStdY = y-standardized coefficient
+  bStdXY = fully standardized coefficient
+   SDofX = standard deviation of X
+
+. estimates store estprobit
+
+. estimates table estlogit estprobit, b(%9.3f) se 
+
+--------------------------------------
+    Variable | estlogit    estprobit  
+-------------+------------------------
+         age |     0.537       0.319  
+             |     0.041       0.023  
+             |
+     dadcoll |
+      1_Yes  |    -0.608      -0.362  
+             |     0.135       0.080  
+             |
+     depress |     0.038       0.022  
+             |     0.009       0.005  
+       _cons |    -9.613      -5.709  
+             |     0.681       0.382  
+--------------------------------------
+                          Legend: b/se
+
+. 
+. //END) Close Log File and Exit Do File. 
+. log close
+      name:  <unnamed>
+       log:  C:\Users\lfh\Desktop\umich summer\categorical data\homework\assig2\
+> lfh-assig2log.log
+  log type:  text
+ closed on:  27 Jul 2021, 03:03:55
+--------------------------------------------------------------------------------

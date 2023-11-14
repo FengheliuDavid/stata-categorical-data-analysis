@@ -1,0 +1,280 @@
+--------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\lfh\Desktop\umich summer\categorical data\homework\assig3\
+> cda_addhealth4-change.log
+  log type:  text
+ opened on:  30 Jul 2021, 00:08:44
+
+. 
+. //  program:    icpsrcda-02-brm-p2.do
+. //  task:       Review 2 - Binary-part 2
+. //  project:    ICPSR CDA
+. //  author:     Liu Fenghe \ 2021-07-29
+. 
+. *program setup
+. version         17.0 
+
+. clear           all                 
+
+. set             linesize 80  
+
+.          
+. 
+. //2.1b) Load the Data. 
+. use "cda_addhealth4-change.dta", clear
+(Add Health extract for ICPSR)
+
+. 
+. //2.1c) Re-estimate your binary logit model. 
+. logit havesex age i.dadcoll depress
+
+Iteration 0:   log likelihood = -910.88557  
+Iteration 1:   log likelihood = -780.66389  
+Iteration 2:   log likelihood = -777.45377  
+Iteration 3:   log likelihood =  -777.4439  
+Iteration 4:   log likelihood =  -777.4439  
+
+Logistic regression                                     Number of obs =  1,418
+                                                        LR chi2(3)    = 266.88
+                                                        Prob > chi2   = 0.0000
+Log likelihood = -777.4439                              Pseudo R2     = 0.1465
+
+------------------------------------------------------------------------------
+     havesex | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         age |   .5369785   .0409223    13.12   0.000     .4567722    .6171847
+             |
+     dadcoll |
+      1_Yes  |  -.6079945   .1347437    -4.51   0.000    -.8720873   -.3439016
+     depress |   .0378402   .0088901     4.26   0.000      .020416    .0552645
+       _cons |  -9.613378   .6805264   -14.13   0.000    -10.94719   -8.279571
+------------------------------------------------------------------------------
+
+.  
+. //2.2) Predicted Probabilities using predict. 
+. predict         prlogit
+(option pr assumed; Pr(havesex))
+
+. label var       prlogit "Logit: Predicted Probability"
+
+. sum             prlogit
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+     prlogit |      1,418     .342031    .1998826   .0348934   .9014162
+
+. dotplot         prlogit, ylabel(0(0.2)1) ///
+> title("Predicted probability from logit") ytitle("Pr(Have sex probability)")
+
+. graph export icpsrcda02-binary-fig1.png , width(1200) replace
+file icpsrcda02-binary-fig1.png saved as PNG format
+
+. 
+. //2.3) Discrete change. Marginal Effects at the Mean
+. mchange, atmeans centered
+
+logit: Changes in Pr(y) | Number of obs = 1418
+
+Expression: Pr(havesex), predict(pr)
+
+               |    Change    p-value 
+---------------+----------------------
+age            |                      
+   +1 centered |     0.114      0.000 
+  +SD centered |     0.196      0.000 
+      Marginal |     0.114      0.000 
+dadcoll        |                      
+ 1 Yes vs 0 No |    -0.124      0.000 
+depress        |                      
+   +1 centered |     0.008      0.000 
+  +SD centered |     0.055      0.000 
+      Marginal |     0.008      0.000 
+
+Predictions at base value
+
+             |      0_No      1_Yes 
+-------------+----------------------
+  Pr(y|base) |     0.693      0.307 
+
+Base values of regressors
+
+             |                    1.           
+             |       age    dadcoll    depress 
+-------------+---------------------------------
+          at |        16       .343       10.4 
+
+1: Estimates with margins option atmeans.
+
+. 
+. //2.4) Discrete change for B + confidence interval. 
+. mchange dadcoll, atmeans stats(ci)  
+
+logit: Changes in Pr(y) | Number of obs = 1418
+
+Expression: Pr(havesex), predict(pr)
+
+               |    Change         LL         UL 
+---------------+---------------------------------
+dadcoll        |                                 
+ 1 Yes vs 0 No |    -0.124     -0.175     -0.073 
+
+Predictions at base value
+
+             |      0_No      1_Yes 
+-------------+----------------------
+  Pr(y|base) |     0.693      0.307 
+
+Base values of regressors
+
+             |                    1.           
+             |       age    dadcoll    depress 
+-------------+---------------------------------
+          at |        16       .343       10.4 
+
+1: Estimates with margins option atmeans.
+
+. 
+. //2.5) Discrete change for C + confidence interval. 
+. mchange age, atmeans stats(ci) centered
+
+logit: Changes in Pr(y) | Number of obs = 1418
+
+Expression: Pr(havesex), predict(pr)
+
+             |    Change         LL         UL 
+-------------+---------------------------------
+age          |                                 
+ +1 centered |     0.114      0.098      0.130 
++SD centered |     0.196      0.168      0.223 
+    Marginal |     0.114      0.098      0.130 
+
+Predictions at base value
+
+             |      0_No      1_Yes 
+-------------+----------------------
+  Pr(y|base) |     0.693      0.307 
+
+Base values of regressors
+
+             |                    1.           
+             |       age    dadcoll    depress 
+-------------+---------------------------------
+          at |        16       .343       10.4 
+
+1: Estimates with margins option atmeans.
+
+. 
+. //2.6) Plot predicted probabilities.  
+. **For people whose dad goes to college, across the range of age
+. mgen,           at(dadcoll=1 age=(11(1)21)) atmeans stub(dadcoll1)
+
+Predictions from: margins, at(dadcoll=1 age=(11(1)21)) atmeans predict(pr)
+
+Variable     Obs Unique      Mean       Min       Max  Label
+--------------------------------------------------------------------------------
+dadcoll1pr1   11     11  .3157285  .0194117  .8096145  pr(y=1_Yes) from margins
+dadcoll1ll1   11     11  .2748756  .0097315  .7469543  95% lower limit
+dadcoll1ul1   11     11  .3565813  .0290919  .8722747  95% upper limit
+dadcoll1age   11     11        16        11        21  Respondent's age
+--------------------------------------------------------------------------------
+
+Specified values of covariates
+
+  dadcoll    depress 
+---------------------
+        1   10.36812 
+
+. label var       dadcoll1pr1 "Dad goes to college"
+
+. 
+. **For people whose dad does not go to college, across the range of age
+. mgen,           at(dadcoll=0 age=(11(1)21)) atmeans stub(dadcoll0)
+
+Predictions from: margins, at(dadcoll=0 age=(11(1)21)) atmeans predict(pr)
+
+Variable     Obs Unique      Mean       Min       Max  Label
+--------------------------------------------------------------------------------
+dadcoll0pr1   11     11   .404502  .0350844  .8865023  pr(y=1_Yes) from margins
+dadcoll0ll1   11     11   .369489  .0196076  .8465736  95% lower limit
+dadcoll0ul1   11     11  .4395149  .0505613  .9264311  95% upper limit
+dadcoll0age   11     11        16        11        21  Respondent's age
+--------------------------------------------------------------------------------
+
+Specified values of covariates
+
+  dadcoll    depress 
+---------------------
+        0   10.36812 
+
+. label var       dadcoll0pr1 "Dad does not go to college"
+
+. 
+. graph twoway ///
+>         (rarea dadcoll1ul1 dadcoll1ll1 dadcoll1age, color(gs10)) ///
+>         (rarea dadcoll0ul1 dadcoll0ll1 dadcoll0age, color(gs10)) ///
+>         (connected dadcoll1pr1 dadcoll1age, lpattern(dash) msize(zero)) ///
+>         (connected dadcoll0pr1 dadcoll0age, lpattern(solid) msize(zero)), ///
+>         legend(on order(3 4)) ///
+>         ylabel(0(.25)1) ytitle("Pr(havesex)") ///
+>         xlabel(11(1)21) xtitle("age") ///
+>         title("Predicted Probability of Having Sex")
+
+. 
+. graph export icpsrcda02-binary-fig2.png , width(1200) replace
+file icpsrcda02-binary-fig2.png saved as PNG format
+
+. 
+. margins, at(age=15 dadcoll=0) at(age=15 dadcoll=1) at(age=20 dadcoll=0) ///
+>          at(age=20 dadcoll=1) atmeans post
+
+Adjusted predictions                                     Number of obs = 1,418
+Model VCE: OIM
+
+Expression: Pr(havesex), predict()
+1._at: age     =       15
+       dadcoll =        0
+       depress = 10.36812 (mean)
+2._at: age     =       15
+       dadcoll =        1
+       depress = 10.36812 (mean)
+3._at: age     =       20
+       dadcoll =        0
+       depress = 10.36812 (mean)
+4._at: age     =       20
+       dadcoll =        1
+       depress = 10.36812 (mean)
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         _at |
+          1  |   .2375119   .0170386    13.94   0.000     .2041169    .2709069
+          2  |   .1450005   .0163586     8.86   0.000     .1129383    .1770628
+          3  |   .8203209   .0243382    33.71   0.000      .772619    .8680229
+          4  |   .7131084   .0356577    20.00   0.000     .6432206    .7829961
+------------------------------------------------------------------------------
+
+. 
+. mlincom (3-1), clear rowname(atmeans) stats(est p ll ul)
+
+             |   lincom    pvalue        ll        ul 
+-------------+----------------------------------------
+     atmeans |    0.583     0.000     0.520     0.646 
+
+. mlincom (2-1), clear rowname(atmeans) stats(est p ll ul)
+
+             |   lincom    pvalue        ll        ul 
+-------------+----------------------------------------
+     atmeans |   -0.093     0.000    -0.131    -0.055 
+
+. 
+. 
+. //2.END) Close Log File and Exit Do File. 
+. log close
+      name:  <unnamed>
+       log:  C:\Users\lfh\Desktop\umich summer\categorical data\homework\assig3\
+> cda_addhealth4-change.log
+  log type:  text
+ closed on:  30 Jul 2021, 00:08:52
+--------------------------------------------------------------------------------

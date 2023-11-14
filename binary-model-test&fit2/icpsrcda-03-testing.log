@@ -1,0 +1,537 @@
+--------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\lfh\Desktop\umich summer\categorical data\homework\assig4\
+> icpsrcda-03-testing.log
+  log type:  text
+ opened on:   3 Aug 2021, 10:10:14
+
+. 
+. //  program:    icpsrcda-03-testing.do
+. //  task:       Review 3 - Testing & Fit
+. //  project:    ICPSR CDA
+. //  author:     Liu Fenghe \ 2021-08-01
+. 
+. 
+. *program setup
+. version         17.0
+
+. clear           all 
+
+. set             linesize 80
+
+. matrix drop _all
+
+. set more off
+
+. 
+. //Load the Data.
+. usecda          cda_science4
+Opening as dataset
+(Biochemist data for ICPSR (some variables artificially constructed))
+
+. save "cda_science4-modified.dta", replace
+file cda_science4-modified.dta saved
+
+. use "cda_science4-modified.dta", clear
+(Biochemist data for ICPSR (some variables artificially constructed))
+
+. 
+. //Generate dummy variable
+. gen cit6_20= (cit6>20) 
+
+. label define cit6_20 0 "citations3 under 20" 1 "citations3 more than 20"
+
+. 
+. 
+. //3.1) Examine data, keep variables, drop missing, and verify.
+. codebook,       compact
+
+Variable   Obs Unique      Mean    Min    Max  Label
+--------------------------------------------------------------------------------
+id         308    308  58654.49  57001  62420  ID Number.
+cit1       308     50  11.60714      0    137  Citations: PhD yr -1 to 1.
+cit3       308     57  14.97078      0    196  Citations: PhD yr 1 to 3.
+cit6       308     65  18.37013      0    143  Citations: PhD yr 4 to 6.
+cit9       308     74  21.07143      0    214  Citations: PhD yr 7 to  9.
+enroll     278      9  5.564748      3     14  Years from BA to PhD.
+fel        308    101  3.190877      1   4.77  Fellow or PhD prestige.
+felclass   308      4  2.694805      1      4  Fellow or PhD prestige class.
+fellow     308      2  .3928571      0      1  Postdoctoral fellow? (1=yes)
+female     308      2  .3474026      0      1  Female? (1=yes)
+job        163     68  2.967117   1.01   4.69  Prestige of 1st univ job.
+jobclass   163      4  2.417178      1      4  Prestige class of 1st job.
+mcit3      306     64  20.95098      0    133  Mentor's 3 yr citation.
+mcitt      303     87  44.58086      0    223  Mentor's total citations.
+mmale      303      2  .9867987      0      1  Was mentor a male? (1=yes)
+mnas       304      2  .0789474      0      1  Was mentor in NAS? (1=yes)
+mpub3      306     35  11.02614      0     48  Mentor's 3 year publications.
+nopub1     308      2       .25      0      1  No pubs PhD yr -1 to 1? (1=yes)
+nopub3     308      2  .2045455      0      1  No pubs PhD yr 1 to 3? (1=yes)
+nopub6     308      2  .1915584      0      1  No pubs PhD yr 4 to 6? (1=yes)
+nopub9     308      2  .1980519      0      1  No pubs PhD yr 7 to 9? (1=yes)
+phd        308     82  3.177987      1   4.77  Prestige of Ph.D. department.
+phdclass   308      4  2.675325      1      4  Prestige class of Ph.D. dept.
+pub1       308     17  2.545455      0     24  Publications: PhD yr -1 to 1.
+pub3       308     19  3.185065      0     31  Publications: PhD yr 1 to 3.
+pub6       308     26  4.165584      0     29  Publications: PhD yr 4 to 6.
+pub9       308     27  4.512987      0     33  Publications: PhD yr 7 to 9.
+pubtot     308     46  11.86364      0     84  Total Pubs in 9 Yrs post-Ph.D.
+work       302      5  2.062914      1      5  Type of first job.
+workadmn   302      2   .089404      0      1  Administration? (1=yes)
+workfac    302      2  .5298013      0      1  Faculty in Univ? (1=yes)
+worktch    302      2   .615894      0      1  Teaching? (1=yes)
+workuniv   302      2   .705298      0      1  University work? (1=yes)
+cit6_20    308      2  .2662338      0      1  
+--------------------------------------------------------------------------------
+
+. keep            cit6_20 female fellow phd enroll mcit3 mnas
+
+. 
+. misschk,        gen(m) 
+
+Variables examined for missing values
+
+   #  Variable        # Missing   % Missing
+--------------------------------------------
+   1  enroll               30         9.7
+   2  fellow                0         0.0
+   3  female                0         0.0
+   4  mcit3                 2         0.6
+   5  mnas                  4         1.3
+   6  phd                   0         0.0
+   7  cit6_20               0         0.0
+
+Missing for |
+      which |
+ variables? |      Freq.     Percent        Cum.
+------------+-----------------------------------
+   1____ __ |         30        9.74        9.74
+   ___45 __ |          1        0.32       10.06
+   ___4_ __ |          1        0.32       10.39
+   ____5 __ |          3        0.97       11.36
+   _____ __ |        273       88.64      100.00
+------------+-----------------------------------
+      Total |        308      100.00
+
+Missing for |
+   how many |
+ variables? |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |        273       88.64       88.64
+          1 |         34       11.04       99.68
+          2 |          1        0.32      100.00
+------------+-----------------------------------
+      Total |        308      100.00
+
+. tab             mnumber
+
+Missing for |
+   how many |
+ variables? |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |        273       88.64       88.64
+          1 |         34       11.04       99.68
+          2 |          1        0.32      100.00
+------------+-----------------------------------
+      Total |        308      100.00
+
+. keep if         mnumber==0
+(35 observations deleted)
+
+. 
+. codebook,   compact   
+
+Variable   Obs Unique      Mean  Min   Max  Label
+--------------------------------------------------------------------------------
+enroll     273      9  5.556777    3    14  Years from BA to PhD.
+fellow     273      2  .4065934    0     1  Postdoctoral fellow? (1=yes)
+female     273      2  .3443223    0     1  Female? (1=yes)
+mcit3      273     60  20.50549    0   129  Mentor's 3 yr citation.
+mnas       273      2  .0805861    0     1  Was mentor in NAS? (1=yes)
+phd        273     80  3.167436    1  4.66  Prestige of Ph.D. department.
+cit6_20    273      2  .2564103    0     1  
+mpattern   273      1         .    .     .  Missing for which variables?
+mnumber    273      1         0    0     0  Missing for how many variables?
+--------------------------------------------------------------------------------
+
+. sum             cit6_20 female fellow phd enroll mcit3 mnas
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+     cit6_20 |        273    .2564103    .4374529          0          1
+      female |        273    .3443223    .4760194          0          1
+      fellow |        273    .4065934    .4920998          0          1
+         phd |        273    3.167436    1.002184          1       4.66
+      enroll |        273    5.556777    1.459465          3         14
+-------------+---------------------------------------------------------
+       mcit3 |        273    20.50549     25.1693          0        129
+        mnas |        273    .0805861    .2726983          0          1
+
+. 
+. //3.2) Computing a z-test. 
+. logit           cit6_20 i.female phd mcit3, nolog
+
+Logistic regression                                     Number of obs =    273
+                                                        LR chi2(3)    =  14.66
+                                                        Prob > chi2   = 0.0021
+Log likelihood = -148.08063                             Pseudo R2     = 0.0472
+
+------------------------------------------------------------------------------
+     cit6_20 | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      female |
+      1_Yes  |  -.5940715   .3239145    -1.83   0.067    -1.228932    .0407893
+         phd |   .3156693   .1640756     1.92   0.054     -.005913    .6372515
+       mcit3 |   .0093319   .0056911     1.64   0.101    -.0018225    .0204863
+       _cons |  -2.113961   .5156763    -4.10   0.000    -3.124668   -1.103254
+------------------------------------------------------------------------------
+
+. 
+. //3.3) Single Coefficient Wald Test. 
+. test            1.female
+
+ ( 1)  [cit6_20]1.female = 0
+
+           chi2(  1) =    3.36
+         Prob > chi2 =    0.0666
+
+. 
+. //3.4) Single Coefficient LR Test. 
+. logit           cit6_20 i.female phd mcit3, nolog
+
+Logistic regression                                     Number of obs =    273
+                                                        LR chi2(3)    =  14.66
+                                                        Prob > chi2   = 0.0021
+Log likelihood = -148.08063                             Pseudo R2     = 0.0472
+
+------------------------------------------------------------------------------
+     cit6_20 | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      female |
+      1_Yes  |  -.5940715   .3239145    -1.83   0.067    -1.228932    .0407893
+         phd |   .3156693   .1640756     1.92   0.054     -.005913    .6372515
+       mcit3 |   .0093319   .0056911     1.64   0.101    -.0018225    .0204863
+       _cons |  -2.113961   .5156763    -4.10   0.000    -3.124668   -1.103254
+------------------------------------------------------------------------------
+
+. estimates       store base
+
+. logit           cit6_20 phd mcit3, nolog
+
+Logistic regression                                     Number of obs =    273
+                                                        LR chi2(2)    =  11.14
+                                                        Prob > chi2   = 0.0038
+Log likelihood = -149.83994                             Pseudo R2     = 0.0358
+
+------------------------------------------------------------------------------
+     cit6_20 | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         phd |   .2513655   .1579167     1.59   0.111    -.0581455    .5608765
+       mcit3 |    .011334   .0055812     2.03   0.042     .0003951    .0222729
+       _cons |  -2.137276   .5094645    -4.20   0.000    -3.135808   -1.138744
+------------------------------------------------------------------------------
+
+. estimates       store nofemale
+
+. lrtest          base nofemale
+
+Likelihood-ratio test
+Assumption: nofemale nested within base
+
+ LR chi2(1) =   3.52
+Prob > chi2 = 0.0607
+
+. 
+. //3.5) Multiple Coefficients Wald Test.  
+. qui logit       cit6_20 i.female phd mcit3, nolog
+
+. test            1.female phd
+
+ ( 1)  [cit6_20]1.female = 0
+ ( 2)  [cit6_20]phd = 0
+
+           chi2(  2) =    5.80
+         Prob > chi2 =    0.0550
+
+. 
+. //3.6) Multiple Coefficients LR Test. 
+. logit           cit6_20 mcit3
+
+Iteration 0:   log likelihood = -155.41032  
+Iteration 1:   log likelihood = -151.22626  
+Iteration 2:   log likelihood = -151.12489  
+Iteration 3:   log likelihood = -151.12488  
+
+Logistic regression                                     Number of obs =    273
+                                                        LR chi2(1)    =   8.57
+                                                        Prob > chi2   = 0.0034
+Log likelihood = -151.12488                             Pseudo R2     = 0.0276
+
+------------------------------------------------------------------------------
+     cit6_20 | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+       mcit3 |   .0150136    .005133     2.92   0.003      .004953    .0250741
+       _cons |  -1.400517   .1859389    -7.53   0.000    -1.764951   -1.036084
+------------------------------------------------------------------------------
+
+. estimates       store nofemalephd
+
+. lrtest          base nofemalephd
+
+Likelihood-ratio test
+Assumption: nofemalephd nested within base
+
+ LR chi2(2) =   6.09
+Prob > chi2 = 0.0476
+
+. 
+. //3.7) Wald Test All Coefficients are Zero. 
+. logit           cit6_20 i.female phd mcit3
+
+Iteration 0:   log likelihood = -155.41032  
+Iteration 1:   log likelihood = -148.24864  
+Iteration 2:   log likelihood = -148.08069  
+Iteration 3:   log likelihood = -148.08063  
+Iteration 4:   log likelihood = -148.08063  
+
+Logistic regression                                     Number of obs =    273
+                                                        LR chi2(3)    =  14.66
+                                                        Prob > chi2   = 0.0021
+Log likelihood = -148.08063                             Pseudo R2     = 0.0472
+
+------------------------------------------------------------------------------
+     cit6_20 | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      female |
+      1_Yes  |  -.5940715   .3239145    -1.83   0.067    -1.228932    .0407893
+         phd |   .3156693   .1640756     1.92   0.054     -.005913    .6372515
+       mcit3 |   .0093319   .0056911     1.64   0.101    -.0018225    .0204863
+       _cons |  -2.113961   .5156763    -4.10   0.000    -3.124668   -1.103254
+------------------------------------------------------------------------------
+
+. test            1.female phd mcit3
+
+ ( 1)  [cit6_20]1.female = 0
+ ( 2)  [cit6_20]phd = 0
+ ( 3)  [cit6_20]mcit3 = 0
+
+           chi2(  3) =   13.88
+         Prob > chi2 =    0.0031
+
+. 
+. //3.8) LR Test All Coefficients are Zero. 
+. logit           cit6_20
+
+Iteration 0:   log likelihood = -155.41032  
+Iteration 1:   log likelihood = -155.41032  
+
+Logistic regression                                    Number of obs =     273
+                                                       LR chi2(0)    =   -0.00
+                                                       Prob > chi2   =       .
+Log likelihood = -155.41032                            Pseudo R2     = -0.0000
+
+------------------------------------------------------------------------------
+     cit6_20 | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+       _cons |  -1.064711   .1386067    -7.68   0.000    -1.336375   -.7930466
+------------------------------------------------------------------------------
+
+. estimates       store intercept
+
+. lrtest          base intercept
+
+Likelihood-ratio test
+Assumption: intercept nested within base
+
+ LR chi2(3) =  14.66
+Prob > chi2 = 0.0021
+
+. 
+. //3.9) More Complicated Wald Tests. 
+. qui logit       cit6_20 i.female phd mcit3
+
+. test            1.female = 2*mcit3
+
+ ( 1)  [cit6_20]1.female - 2*[cit6_20]mcit3 = 0
+
+           chi2(  1) =    3.62
+         Prob > chi2 =    0.0572
+
+. 
+. //3.10) Compare BIC & AIC statistics across non-nested models. 
+. qui logit       cit6_20 i.female phd mcit3
+
+. estimates       store m1
+
+. 
+. qui logit       cit6_20 i.female mcit3 
+
+. estimates       store m2
+
+. 
+. qui logit       cit6_20 i.female enroll mcit3 mnas
+
+. estimates       store m3
+
+. 
+. qui logit       cit6_20 i.female i.fellow i.mnas phd enroll mcit3 
+
+. estimates       store m4
+
+. 
+. estimates       table m1 m2 m3 m4, b(%9.3f) star stats(bic aic)
+
+--------------------------------------------------------------------------
+    Variable |      m1             m2             m3             m4       
+-------------+------------------------------------------------------------
+      female |
+      1_Yes  |    -0.594         -0.468         -0.451         -0.200     
+             |
+         phd |     0.316                                        0.180     
+       mcit3 |     0.009          0.014**        0.011*         0.009     
+      enroll |                                  -0.209         -0.189     
+        mnas |                                   0.771                    
+             |
+      fellow |
+      1_Yes  |                                                  1.314***  
+             |
+        mnas |
+      1_Yes  |                                                  0.397     
+             |
+       _cons |    -2.114***      -1.234***      -0.111         -1.446     
+-------------+------------------------------------------------------------
+         bic |   318.599        316.782        321.824        311.980     
+         aic |   304.161        305.953        303.777        286.714     
+--------------------------------------------------------------------------
+                                  Legend: * p<0.05; ** p<0.01; *** p<0.001
+
+. 
+. //3.11) Compute and list residuals. 
+. logit           cit6_20 phd i.mnas i.female i.fellow
+
+Iteration 0:   log likelihood = -155.41032  
+Iteration 1:   log likelihood = -139.63164  
+Iteration 2:   log likelihood = -139.10581  
+Iteration 3:   log likelihood = -139.10471  
+Iteration 4:   log likelihood = -139.10471  
+
+Logistic regression                                     Number of obs =    273
+                                                        LR chi2(4)    =  32.61
+                                                        Prob > chi2   = 0.0000
+Log likelihood = -139.10471                             Pseudo R2     = 0.1049
+
+------------------------------------------------------------------------------
+     cit6_20 | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+         phd |   .2709856   .1607103     1.69   0.092    -.0440009    .5859721
+             |
+        mnas |
+      1_Yes  |   .4629098   .4987148     0.93   0.353    -.5145531    1.440373
+             |
+      female |
+      1_Yes  |  -.3080567   .3403137    -0.91   0.365    -.9750593     .358946
+             |
+      fellow |
+      1_Yes  |   1.324539   .3099767     4.27   0.000      .716996    1.932082
+       _cons |   -2.54652   .5510245    -4.62   0.000    -3.626509   -1.466532
+------------------------------------------------------------------------------
+
+. predict         rstd, rs
+
+. sort            rstd
+
+. list            rstd cit6_20 phd mnas female fellow in 1/45, clean // Note: 1=
+> #
+
+            rstd   cit6_20    phd    mnas   female   fellow  
+  1.   -1.883278         0   4.54    0_No     0_No    1_Yes  
+  2.   -1.883278         0   4.54    0_No     0_No    1_Yes  
+  3.   -1.883278         1   4.54    0_No     0_No    1_Yes  
+  4.   -1.883278         0   4.54    0_No     0_No    1_Yes  
+  5.   -1.883278         1   4.54    0_No     0_No    1_Yes  
+  6.   -1.883278         0   4.54    0_No     0_No    1_Yes  
+  7.   -1.883278         0   4.54    0_No     0_No    1_Yes  
+  8.   -1.883278         0   4.54    0_No     0_No    1_Yes  
+  9.   -1.883278         0   4.54    0_No     0_No    1_Yes  
+ 10.   -1.467148         0   2.51   1_Yes     0_No    1_Yes  
+ 11.   -1.467148         0   2.51   1_Yes     0_No    1_Yes  
+ 12.   -1.300419         0   4.54   1_Yes     0_No    1_Yes  
+ 13.   -1.284091         0    2.1    0_No     0_No    1_Yes  
+ 14.   -1.284091         0    2.1    0_No     0_No    1_Yes  
+ 15.   -1.284091         0    2.1    0_No     0_No    1_Yes  
+ 16.   -1.243053         0   3.47    0_No     0_No    1_Yes  
+ 17.   -1.243053         0   3.47    0_No     0_No    1_Yes  
+ 18.   -1.186559         0   4.62   1_Yes     0_No    1_Yes  
+ 19.   -1.186559         1   4.62   1_Yes     0_No    1_Yes  
+ 20.   -1.186559         0   4.62   1_Yes     0_No    1_Yes  
+ 21.   -1.186559         1   4.62   1_Yes     0_No    1_Yes  
+ 22.   -1.186559         0   4.62   1_Yes     0_No    1_Yes  
+ 23.   -1.126724         0   2.86    0_No     0_No     0_No  
+ 24.   -1.126724         0   2.86    0_No     0_No     0_No  
+ 25.   -1.126724         0   2.86    0_No     0_No     0_No  
+ 26.   -1.126724         0   2.86    0_No     0_No     0_No  
+ 27.   -1.126724         0   2.86    0_No     0_No     0_No  
+ 28.   -1.126724         0   2.86    0_No     0_No     0_No  
+ 29.   -1.126724         0   2.86    0_No     0_No     0_No  
+ 30.   -1.059695         0   2.26    0_No     0_No    1_Yes  
+ 31.   -1.059695         0   2.26    0_No     0_No    1_Yes  
+ 32.    -1.05584         0   2.96    0_No    1_Yes     0_No  
+ 33.    -1.05584         0   2.96    0_No    1_Yes     0_No  
+ 34.    -1.05584         0   2.96    0_No    1_Yes     0_No  
+ 35.    -1.05584         0   2.96    0_No    1_Yes     0_No  
+ 36.    -1.05584         0   2.96    0_No    1_Yes     0_No  
+ 37.    -1.05584         0   2.96    0_No    1_Yes     0_No  
+ 38.    -1.05584         0   2.96    0_No    1_Yes     0_No  
+ 39.    -1.05584         0   2.96    0_No    1_Yes     0_No  
+ 40.   -.9930167         0   1.73    0_No     0_No    1_Yes  
+ 41.   -.9930167         0   1.73    0_No     0_No    1_Yes  
+ 42.   -.9281024         0   4.54    0_No     0_No     0_No  
+ 43.   -.9281024         0   4.54    0_No     0_No     0_No  
+ 44.   -.9281024         0   4.54    0_No     0_No     0_No  
+ 45.   -.9063326         0    3.4    0_No     0_No     0_No  
+
+. list            rstd cit6_20 phd mnas female fellow in -30/l, clean 
+
+           rstd   cit6_20    phd    mnas   female   fellow  
+244.   1.599056         1   1.68    0_No    1_Yes     0_No  
+245.   1.599056         0   1.68    0_No    1_Yes     0_No  
+246.   1.599056         0   1.68    0_No    1_Yes     0_No  
+247.    1.62685         1   3.33    0_No    1_Yes     0_No  
+248.    1.62685         0   3.33    0_No    1_Yes     0_No  
+249.   1.630805         1   4.29   1_Yes     0_No     0_No  
+250.   1.668807         1      2    0_No    1_Yes    1_Yes  
+251.   1.683551         1   3.59    0_No     0_No    1_Yes  
+252.   1.683551         1   3.59    0_No     0_No    1_Yes  
+253.   1.683551         1   3.59    0_No     0_No    1_Yes  
+254.   1.683551         0   3.59    0_No     0_No    1_Yes  
+255.   1.683551         1   3.59    0_No     0_No    1_Yes  
+256.    1.72719         0   1.86    0_No     0_No     0_No  
+257.    1.72719         1   1.86    0_No     0_No     0_No  
+258.   1.814699         1   3.48   1_Yes     0_No     0_No  
+259.   1.933113         1   4.62    0_No     0_No     0_No  
+260.   1.990585         1   2.17    0_No    1_Yes     0_No  
+261.   1.990585         0   2.17    0_No    1_Yes     0_No  
+262.   2.040543         1   1.95    0_No     0_No    1_Yes  
+263.   2.040543         1   1.95    0_No     0_No    1_Yes  
+264.   2.059342         1   3.36    0_No     0_No    1_Yes  
+265.   2.059342         1   3.36    0_No     0_No    1_Yes  
+266.   2.059342         1   3.36    0_No     0_No    1_Yes  
+267.   2.118009         1   3.91    0_No     0_No     0_No  
+268.   2.141018         1   1.63    0_No     0_No    1_Yes  
+269.   2.141018         1   1.63    0_No     0_No    1_Yes  
+270.   2.283635         1   3.34    0_No     0_No     0_No  
+271.   2.361343         1   3.09    0_No     0_No     0_No  
+272.   2.814645         1    1.8    0_No     0_No     0_No  
+273.   2.841875         1   1.73    0_No     0_No     0_No  
+
+. *                                                                             
+>                   Note: l=letter; as in 'last'
+. 
+. //3.END) Close the Log File and exit Do File.
+. log close
+      name:  <unnamed>
+       log:  C:\Users\lfh\Desktop\umich summer\categorical data\homework\assig4\
+> icpsrcda-03-testing.log
+  log type:  text
+ closed on:   3 Aug 2021, 10:10:19
+--------------------------------------------------------------------------------

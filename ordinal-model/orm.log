@@ -1,0 +1,615 @@
+--------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\lfh\Desktop\umich summer\categorical data\homework\assig5\
+> orm.log
+  log type:  text
+ opened on:   7 Aug 2021, 02:51:16
+
+. 
+. //  program:    orm.do
+. //  task:       Assignment5 - Ordinal Regression
+. //  project:    ICPSR CDA
+. //  author:     Liu Fenghe \ 2021-08-05
+. 
+. 
+. *program setup
+. version         17.0
+
+. clear           all 
+
+. set             linesize 80
+
+. *set scheme cleanplots, perm
+. 
+. //1b) Load the Data.
+. usecda  cda_hsb4
+Opening as dataset
+(High School and Beyond data for ICPSR (v3))
+
+. 
+. //1c) Examine data, select variables, drop missing, and verify. 
+. codebook,       compact
+
+Variable    Obs Unique      Mean  Min   Max  Label
+--------------------------------------------------------------------------------
+id         1647   1647       824    1  1647  Respondent's ID
+sex        1583      2  1.529375    1     2  Respondent's sex
+male       1583      2  .4706254    0     1  Male? (1=yes)
+female     1583      2  .5293746    0     1  Female? (1=yes)
+region     1647      9  4.982999    1     9  Region of country R lives in
+hsprog     1629      9  2.609576    1     9  High school program
+algebra2   1586      2  .5094578    0     1  Did R take Algebra 2?
+geometry   1588      2  .5944584    0     1  Did R take Geometry?
+trig       1546      2  .2813713    0     1  Did R take Trigonometry?
+calc       1498      2  .0927904    0     1  Did R take Calculus?
+physics    1522      2   .218134    0     1  Did R take Physics?
+chem       1549      2  .4015494    0     1  Did R take Chemistry?
+hsgrades   1632      8  2.887255   .5     4  What are R's grades in HS?
+mathabs    1647      2  .4274438    0     1  Math-mostly A's & B's?
+englabs    1647      2  .5009107    0     1  English-mostly A's & B's?
+busiabs    1647      2  .3564056    0     1  Business-mostly A's and B's?
+remengl    1618      2  .3003708    0     1  Taken remedial English?
+remmath    1617      2  .2980829    0     1  Taken remedial math?
+advengl    1618      2  .2707046    0     1  Taken advanced English?
+advmath    1611      2  .2439479    0     1  Taken advanced math?
+hmwktime   1637      7  4.511912    1     7  Time spent on hmwk each week?
+workage    1633     10  14.65401   11    21  Age R first worked
+hrswork    1628      7  4.226044    1     7  Hours R worked last week
+hrslstyr   1626      7  3.186962    1     7  Hrs/wk R worked last year
+varsport   1619      3  1.494132    1     3  Participate in varsity sports?
+pepclub    1609      3   1.20261    1     3  Participate in other group?
+livealon   1641      2  .0085314    0     1  Lived alone while in HS
+livedad    1642      2  .7545676    0     1  Lived with dad while in HS
+livemale   1641      2   .071298    0     1  Lived w/ male guardian in HS
+livemom    1642      2  .8848965    0     1  Lived with mom while in HS
+livfemal   1641      2  .0426569    0     1  Lived w/ female guardian in HS
+livsibs    1641      2  .7775746    0     1  Lived with siblings in HS
+livgrand   1641      2  .0457038    0     1  Lived with grandparents in HS
+momwkhs    1596      5  2.229323    1     5  Mom worked while R in HS
+momwkel    1581      5  2.027198    1     5  Mom worked while R in elem schl
+momwkpre   1572      5  1.947201    1     5  Mom worked before R in elem schl
+dadocc     1571     19  8.635264    1    19  Father's occupation
+momocc     1578     19  9.729404    1    19  Mother's occupation
+daded      1567     11  5.262285    1    11  Father's education level
+momed      1600     11   4.93875    1    11  Mother's education level
+dadhsgrd   1600      2   .700625    0     1  Dad HS grad? (1=yes)
+momhsgrd   1600      2   .700625    0     1  Mom HS grad? (1=yes)
+dadcoll    1600      2    .13625    0     1  Dad college grad? (1=yes)
+momcoll    1600      2    .13625    0     1  Mom college grad? (1=yes)
+dadmonit   1594      3  .9949812    0     3  Father monitors school work
+mommonit   1613      3  .9566026    0     3  Mother monitors school work
+talkpar    1602      4  2.388889    1     4  How often R talks to parents
+dadplans   1584      3  2.147727    1     3  Dad's influenced R's HS plans
+momplans   1603      3  2.296319    1     3  Mom's influenced R's HS plans
+edattain   1604      9  5.546758    1     9  Educ level R expects to attain
+momatain   1571     10  6.926162    1    10  Educ level mom expects for R
+lowed      1587      9  4.657215    1     9  Lowest educ level that R wants
+compserv   1571      4  2.702101    1     4  Compulsory service R would choose
+earnings   1521     10  4.442801    0    15  Earnings for the survey year
+expenses   1526      9  1.862713    0    10  R's expenses
+netearn    1421      6  762.6671    0  2000  Net earnings in survey year
+sumearn    1362      6  793.2085    0  2000  Net earnings from last year
+agewed     1538     16  22.30819    1    31  Age R expects be married
+agekid     1514     16  22.84346    1    31  Age R expects have 1st child
+agejob     1534     16  18.45698    1    31  Age R expects get 1st FT job
+agehome    1528     16  20.94372    1    31  Age R expects move out
+ageeduc    1527     16  20.83694    1    31  Age R expects finish educ
+age        1582      7  17.48293   15    21  R's age: 15-21+
+race       1625      5  2.098462    1     5  R's race
+white      1625      2  .7741538    0     1  White? (1=yes)
+black      1625      2  .1372308    0     1  Black? (1=yes)
+amerind    1625      2  .0086154    0     1  American Indian? (1=yes)
+asian      1625      2  .0129231    0     1  Asian? (1=yes)
+othrace    1625      2  .0670769    0     1  Other race? (1=yes)
+origin     1427     31  19.05957    1    31  R's country of origin
+religion   1540     11  5.392208    1    11  R's religion
+relProt    1540      2  .4402597    0     1  Protestant? (1=yes)
+relCath    1540      2  .3818182    0     1  Catholic? (1=yes)
+relJew     1540      2   .024026    0     1  Jewish? (1=yes)
+relOth     1540      2  .1006494    0     1  Other religion? (1=yes)
+relNone    1540      2  .0532468    0     1  No religion? (1=yes)
+religper   1551      3  1.958736    1     3  Is R a religious person?
+politics   1536      6  3.505208    1     6  R's political ideology
+fincome    1449      7  21.26915  3.5    38  R's family income
+college    1518      2  1.435441    1     2  Type of coll R plans to attend
+pubpriv    1511      2  1.209133    1     2  Does R plan on pub or prv coll?
+instate    1517      2  .7785102    0     1  Does R plan on coll in-state?
+ses        1604      3  1.933915    1     3  R's socioeconomic status
+--------------------------------------------------------------------------------
+
+. keep            talkpar agehome female dadplans expenses
+
+. misschk,        gen(m)
+
+Variables examined for missing values
+
+   #  Variable        # Missing   % Missing
+--------------------------------------------
+   1  female               64         3.9
+   2  talkpar              45         2.7
+   3  dadplans             63         3.8
+   4  expenses            121         7.3
+   5  agehome             119         7.2
+
+Missing for |
+      which |
+ variables? |      Freq.     Percent        Cum.
+------------+-----------------------------------
+      12345 |         16        0.97        0.97
+      1234_ |          1        0.06        1.03
+      12_45 |          3        0.18        1.21
+      1_345 |          1        0.06        1.28
+      1__45 |         27        1.64        2.91
+      1___5 |         13        0.79        3.70
+      1____ |          3        0.18        3.89
+      _234_ |          2        0.12        4.01
+      _23_5 |          1        0.06        4.07
+      _23__ |          6        0.36        4.43
+      _2_45 |          1        0.06        4.49
+      _2_4_ |          1        0.06        4.55
+      _2__5 |          1        0.06        4.61
+      _2___ |         13        0.79        5.40
+      __345 |          1        0.06        5.46
+      __34_ |          3        0.18        5.65
+      __3_5 |          5        0.30        5.95
+      __3__ |         27        1.64        7.59
+      ___45 |         16        0.97        8.56
+      ___4_ |         49        2.98       11.54
+      ____5 |         34        2.06       13.60
+      _____ |      1,423       86.40      100.00
+------------+-----------------------------------
+      Total |      1,647      100.00
+
+Missing for |
+   how many |
+ variables? |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      1,423       86.40       86.40
+          1 |        126        7.65       94.05
+          2 |         45        2.73       96.78
+          3 |         32        1.94       98.72
+          4 |          5        0.30       99.03
+          5 |         16        0.97      100.00
+------------+-----------------------------------
+      Total |      1,647      100.00
+
+. tab             mnumber
+
+Missing for |
+   how many |
+ variables? |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      1,423       86.40       86.40
+          1 |        126        7.65       94.05
+          2 |         45        2.73       96.78
+          3 |         32        1.94       98.72
+          4 |          5        0.30       99.03
+          5 |         16        0.97      100.00
+------------+-----------------------------------
+      Total |      1,647      100.00
+
+. keep if         mnumber==0
+(224 observations deleted)
+
+. codebook        talkpar agehome female dadplans expenses, compact
+
+Variable    Obs Unique      Mean  Min  Max  Label
+--------------------------------------------------------------------------------
+talkpar    1423      4  2.405481    1    4  How often R talks to parents
+agehome    1423     16  20.99859    1   31  Age R expects move out
+female     1423      2  .5333802    0    1  Female? (1=yes)
+dadplans   1423      3  2.156008    1    3  Dad's influenced R's HS plans
+expenses   1423      9  1.848559    0   10  R's expenses
+--------------------------------------------------------------------------------
+
+. sum             talkpar agehome female dadplans expenses
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+     talkpar |      1,423    2.405481    1.126037          1          4
+     agehome |      1,423    20.99859    4.847752          1         31
+      female |      1,423    .5333802    .4990599          0          1
+    dadplans |      1,423    2.156008    .7488229          1          3
+    expenses |      1,423    1.848559    2.166685          0         10
+
+. 
+. //2) Produce table including distribution of output variable. 
+. tab1            talkpar, mis
+
+-> tabulation of talkpar  
+
+How often R |
+   talks to |
+    parents |      Freq.     Percent        Cum.
+------------+-----------------------------------
+   1_rarely |        408       28.67       28.67
+    2_<1/wk |        352       24.74       53.41
+   3_1-2/wk |        341       23.96       77.37
+    4_daily |        322       22.63      100.00
+------------+-----------------------------------
+      Total |      1,423      100.00
+
+. 
+. //3) Estimate the Ordered Logit. 
+. ologit          talkpar agehome i.female dadplans expenses
+
+Iteration 0:   log likelihood =  -1967.051  
+Iteration 1:   log likelihood = -1916.4987  
+Iteration 2:   log likelihood = -1916.3665  
+Iteration 3:   log likelihood = -1916.3664  
+
+Ordered logistic regression                             Number of obs =  1,423
+                                                        LR chi2(4)    = 101.37
+                                                        Prob > chi2   = 0.0000
+Log likelihood = -1916.3664                             Pseudo R2     = 0.0258
+
+------------------------------------------------------------------------------
+     talkpar | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+     agehome |   .0489044   .0107886     4.53   0.000     .0277591    .0700497
+             |
+      female |
+      1_yes  |   .5200643   .0970838     5.36   0.000     .3297836    .7103451
+    dadplans |   .4762194   .0657321     7.24   0.000     .3473869    .6050519
+    expenses |   -.003919   .0222479    -0.18   0.860    -.0475241    .0396862
+-------------+----------------------------------------------------------------
+       /cut1 |   1.369916   .2799739                      .8211769    1.918654
+       /cut2 |   2.481561   .2859244                      1.921159    3.041962
+       /cut3 |   3.625596   .2930172                      3.051293    4.199899
+------------------------------------------------------------------------------
+
+. 
+. //4) Odds Ratios. 
+. listcoef,       help
+
+ologit (N=1423): Factor change in odds 
+
+  Odds of: >m vs <=m
+
+------------------------------------------------------------------------
+             |         b        z    P>|z|       e^b   e^bStdX     SDofX
+-------------+----------------------------------------------------------
+     agehome |    0.0489    4.533    0.000     1.050     1.268     4.848
+             |
+      female |
+      1_yes  |    0.5201    5.357    0.000     1.682     1.296     0.499
+    dadplans |    0.4762    7.245    0.000     1.610     1.428     0.749
+    expenses |   -0.0039   -0.176    0.860     0.996     0.992     2.167
+------------------------------------------------------------------------
+       b = raw coefficient
+       z = z-score for test of b=0
+   P>|z| = p-value for z-test
+     e^b = exp(b) = factor change in odds for unit increase in X
+ e^bStdX = exp(b*SD of X) = change in odds for SD increase in X
+   SDofX = standard deviation of X
+
+. listcoef,       percent help
+
+ologit (N=1423): Percentage change in odds 
+
+  Odds of: >m vs <=m
+
+------------------------------------------------------------------------
+             |         b        z    P>|z|         %     %StdX     SDofX
+-------------+----------------------------------------------------------
+     agehome |    0.0489    4.533    0.000       5.0      26.8     4.848
+             |
+      female |
+      1_yes  |    0.5201    5.357    0.000      68.2      29.6     0.499
+    dadplans |    0.4762    7.245    0.000      61.0      42.8     0.749
+    expenses |   -0.0039   -0.176    0.860      -0.4      -0.8     2.167
+------------------------------------------------------------------------
+       b = raw coefficient
+       z = z-score for test of b=0
+   P>|z| = p-value for z-test
+       % = percent change in odds for unit increase in X
+   %StdX = percent change in odds for SD increase in X
+   SDofX = standard deviation of X
+
+. 
+. //7) Compute Discrete Change for C and B. 
+. mchange         female agehome, atmeans centered 
+
+ologit: Changes in Pr(y) | Number of obs = 1423
+
+Expression: Pr(talkpar), predict(outcome())
+
+               |  1 rarely    2 <1/wk   3 1-2/wk    4 daily 
+---------------+--------------------------------------------
+female         |                                            
+ 1 yes vs 0 no |    -0.105     -0.023      0.042      0.087 
+       p-value |     0.000      0.000      0.000      0.000 
+agehome        |                                            
+   +1 centered |    -0.010     -0.002      0.004      0.008 
+       p-value |     0.000      0.000      0.000      0.000 
+  +SD centered |    -0.048     -0.011      0.019      0.040 
+       p-value |     0.000      0.000      0.000      0.000 
+      Marginal |    -0.010     -0.002      0.004      0.008 
+       p-value |     0.000      0.000      0.000      0.000 
+
+Predictions at base value
+
+             |  1_rarely    2_<1/wk   3_1-2/wk    4_daily 
+-------------+--------------------------------------------
+  Pr(y|base) |     0.278      0.261      0.247      0.214 
+
+Base values of regressors
+
+             |                    1.                      
+             |   agehome     female   dadplans   expenses 
+-------------+--------------------------------------------
+          at |        21       .533       2.16       1.85 
+
+1: Estimates with margins option atmeans.
+
+. 
+. //8) Get confidence interval 
+. mchange         female agehome, atmeans centered stats(ci)
+
+ologit: Changes in Pr(y) | Number of obs = 1423
+
+Expression: Pr(talkpar), predict(outcome())
+
+               |  1 rarely    2 <1/wk   3 1-2/wk    4 daily 
+---------------+--------------------------------------------
+female         |                                            
+ 1 yes vs 0 no |    -0.105     -0.023      0.042      0.087 
+            LL |    -0.143     -0.034      0.025      0.055 
+            UL |    -0.066     -0.013      0.058      0.118 
+agehome        |                                            
+   +1 centered |    -0.010     -0.002      0.004      0.008 
+            LL |    -0.014     -0.003      0.002      0.005 
+            UL |    -0.006     -0.001      0.006      0.012 
+  +SD centered |    -0.048     -0.011      0.019      0.040 
+            LL |    -0.068     -0.017      0.010      0.023 
+            UL |    -0.027     -0.006      0.028      0.057 
+      Marginal |    -0.010     -0.002      0.004      0.008 
+            LL |    -0.014     -0.004      0.002      0.005 
+            UL |    -0.006     -0.001      0.006      0.012 
+
+Predictions at base value
+
+             |  1_rarely    2_<1/wk   3_1-2/wk    4_daily 
+-------------+--------------------------------------------
+  Pr(y|base) |     0.278      0.261      0.247      0.214 
+
+Base values of regressors
+
+             |                    1.                      
+             |   agehome     female   dadplans   expenses 
+-------------+--------------------------------------------
+          at |        21       .533       2.16       1.85 
+
+1: Estimates with margins option atmeans.
+
+. 
+. 
+. //12)
+. **Generate new variables to plot
+. mgen,           at(agehome=(1(1)31)) atmeans stub(mpr)
+
+Predictions from: margins, at(agehome=(1(1)31)) atmeans predict(outcome())
+
+Variable    Obs Unique      Mean       Min       Max  Label
+--------------------------------------------------------------------------------
+mprpr1       31     31  .3365974  .1910811  .5060323  pr(y=1_rarely) from mar...
+mprll1       31     31  .2862982  .1532679  .3969936  95% lower limit
+mprul1       31     31  .3868965  .2288944  .6150711  95% upper limit
+mpragehome   31     31        16         1        31  Age R expects move out
+mprCpr1      31     31  .3365974  .1910811  .5060323  pr(y<=1_rarely)
+mprpr2       31     31  .2582956  .2268297  .2709678  pr(y=2_<1/wk) from margins
+mprll2       31     31  .2325127  .1992457  .2464664  95% lower limit
+mprul2       31     31  .2840785  .2544138  .2954693  95% upper limit
+mprCpr2      31     31   .594893  .4179109  .7569032  pr(y<=2_<1/wk)
+mprpr3       31     31  .2206823  .1502879  .2747693  pr(y=3_1-2/wk) from mar...
+mprll3       31     31  .1914542  .1048959  .2488809  95% lower limit
+mprul3       31     31  .2499105  .1956799  .3006578  95% upper limit
+mprCpr3      31     31  .8155753  .6926802   .907191  pr(y<=3_1-2/wk)
+mprpr4       31     31  .1844247  .0928089  .3073198  pr(y=4_daily) from margins
+mprll4       31     31  .1529578  .0548442  .2565716  95% lower limit
+mprul4       31     31  .2158916  .1307736   .358068  95% upper limit
+mprCpr4      31      3         1  .9999999         1  pr(y<=4_daily)
+--------------------------------------------------------------------------------
+
+Specified values of covariates
+
+        1.                      
+   female   dadplans   expenses 
+--------------------------------
+ .5333802   2.156008   1.848559 
+
+. 
+. label var mprpr1 "Pr(rare)"
+
+. label var mprpr2 "Pr(less than once a week)"
+
+. label var mprpr3 "Pr(once or twice a week)"
+
+. label var mprpr4 "Pr(every)"
+
+. label var mprCpr1 "Pr(<=rare)"
+
+. label var mprCpr2 "Pr(<=less than once a week)"
+
+. label var mprCpr3 "Pr(<=once or twice a week)"
+
+. label var mprCpr4 "Pr(<=every)"
+
+. 
+. **Graph predicted probabilities
+. graph twoway (connected mprpr1 mprpr2 mprpr3 mprpr4 mpragehome, ///
+>                 title("Frequency of Talking To Parents and Age To Move Out") /
+> //
+>                 subtitle("(Other Variables Held at Means)") ///
+>                 ytitle("Predicted Pr(Frequancy)") ///
+>                 xtitle("Age To Move Out") ///
+>                 xlabel(1(5)31) ylabel(0(.25)1, grid) ///
+>                 msymbol(none none none none))  
+
+.         
+. graph export icpsrcda04-ordinal-fig1.png , width(1200) replace
+file icpsrcda04-ordinal-fig1.png saved as PNG format
+
+. 
+. * Obtain specific number
+. margins, at(agehome=(1(10)31)) atmeans post
+
+Adjusted predictions                                     Number of obs = 1,423
+Model VCE: OIM
+
+1._predict: Pr(talkpar==1), predict(pr outcome(1))
+2._predict: Pr(talkpar==2), predict(pr outcome(2))
+3._predict: Pr(talkpar==3), predict(pr outcome(3))
+4._predict: Pr(talkpar==4), predict(pr outcome(4))
+
+1._at: agehome  =        1
+       0.female = .4666198 (mean)
+       1.female = .5333802 (mean)
+       dadplans = 2.156008 (mean)
+       expenses = 1.848559 (mean)
+2._at: agehome  =       11
+       0.female = .4666198 (mean)
+       1.female = .5333802 (mean)
+       dadplans = 2.156008 (mean)
+       expenses = 1.848559 (mean)
+3._at: agehome  =       21
+       0.female = .4666198 (mean)
+       1.female = .5333802 (mean)
+       dadplans = 2.156008 (mean)
+       expenses = 1.848559 (mean)
+4._at: agehome  =       31
+       0.female = .4666198 (mean)
+       1.female = .5333802 (mean)
+       dadplans = 2.156008 (mean)
+       expenses = 1.848559 (mean)
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+_predict#_at |
+        1 1  |   .5060324    .055633     9.10   0.000     .3969936    .6150711
+        1 2  |    .385821   .0289615    13.32   0.000     .3290575    .4425844
+        1 3  |   .2780898   .0120771    23.03   0.000     .2544191    .3017605
+        1 4  |   .1910811   .0192928     9.90   0.000     .1532679    .2288944
+        2 1  |   .2508709   .0183081    13.70   0.000     .2149876    .2867541
+        2 2  |   .2704527    .012527    21.59   0.000     .2459001    .2950053
+        2 3  |   .2612508     .01207    21.64   0.000     .2375941    .2849076
+        2 4  |   .2268297   .0140737    16.12   0.000     .1992457    .2544138
+        3 1  |   .1502879   .0231596     6.49   0.000     .1048959    .1956799
+        3 2  |   .2007476   .0151105    13.29   0.000     .1711317    .2303636
+        3 3  |   .2467843   .0116809    21.13   0.000     .2238901    .2696784
+        3 4  |   .2747693   .0132086    20.80   0.000     .2488809    .3006578
+        4 1  |   .0928089   .0193701     4.79   0.000     .0548442    .1307736
+        4 2  |   .1429787   .0159476     8.97   0.000      .111722    .1742354
+        4 3  |   .2138751    .010931    19.57   0.000     .1924507    .2352995
+        4 4  |   .3073198   .0258924    11.87   0.000     .2565715     .358068
+------------------------------------------------------------------------------
+
+. mlincom (3-1), clear rowname(atmeans) stats(est p ll ul)
+
+             |   lincom    pvalue        ll        ul 
+-------------+----------------------------------------
+     atmeans |   -0.228     0.000    -0.334    -0.122 
+
+. mlincom (3-2) - (1-2), clear rowname(atmeans) stats(est p ll ul)
+
+             |   lincom    pvalue        ll        ul 
+-------------+----------------------------------------
+     atmeans |   -0.228     0.000    -0.334    -0.122 
+
+. 
+. **Graph cumulative probabilities
+. graph twoway (connected mprCpr1 mprCpr2 mprCpr3 mprCpr4 mpragehome, ///
+>                 title("Frequency of Talking To Parents and Age To Move Out") /
+> //
+>                 subtitle("(Other Variables Held at Means)") ///
+>                 ytitle("Predicted Pr(Frequancy)") ///
+>                 xtitle("Age To Move Out") ///
+>                 xlabel(1(5)31) ylabel(0(.25)1, grid) ///
+>                 msymbol(none none none none) name(tmp2, replace) ///
+>                 text(.22 5 "rare", place(e)) ///
+>                 text(.50 6 "less than once a week", place(e)) ///
+>                 text(.67 14 "once or twice a week", place(e)) ///
+>                 text(.90 17 "every", place(e))), ///
+>                 legend(off)
+
+. 
+. graph export icpsrcda04-ordinal-fig2.png , width(1200) replace
+file icpsrcda04-ordinal-fig2.png saved as PNG format
+
+. 
+. //14) Testing the Parallel Regression Assumption. 
+. ologit          talkpar agehome i.female dadplans expenses
+
+Iteration 0:   log likelihood =  -1967.051  
+Iteration 1:   log likelihood = -1916.4987  
+Iteration 2:   log likelihood = -1916.3665  
+Iteration 3:   log likelihood = -1916.3664  
+
+Ordered logistic regression                             Number of obs =  1,423
+                                                        LR chi2(4)    = 101.37
+                                                        Prob > chi2   = 0.0000
+Log likelihood = -1916.3664                             Pseudo R2     = 0.0258
+
+------------------------------------------------------------------------------
+     talkpar | Coefficient  Std. err.      z    P>|z|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+     agehome |   .0489044   .0107886     4.53   0.000     .0277591    .0700497
+             |
+      female |
+      1_yes  |   .5200643   .0970838     5.36   0.000     .3297836    .7103451
+    dadplans |   .4762194   .0657321     7.24   0.000     .3473869    .6050519
+    expenses |   -.003919   .0222479    -0.18   0.860    -.0475241    .0396862
+-------------+----------------------------------------------------------------
+       /cut1 |   1.369916   .2799739                      .8211769    1.918654
+       /cut2 |   2.481561   .2859244                      1.921159    3.041962
+       /cut3 |   3.625596   .2930172                      3.051293    4.199899
+------------------------------------------------------------------------------
+
+. brant,  detail
+
+Estimated coefficients from binary logits
+
+-----------------------------------------------
+    Variable |  y_gt_1     y_gt_2     y_gt_3   
+-------------+---------------------------------
+     agehome |    0.056      0.054      0.019  
+             |     4.80       4.17       1.26  
+             |
+      female |
+      1_yes  |    0.333      0.601      0.672  
+             |     2.73       5.40       5.04  
+             |
+    dadplans |    0.582      0.464      0.351  
+             |     7.15       6.21       3.97  
+    expenses |    0.010     -0.017     -0.013  
+             |     0.35      -0.66      -0.42  
+       _cons |   -1.670     -2.568     -2.763  
+             |    -5.23      -7.54      -7.00  
+-----------------------------------------------
+                                    Legend: b/t
+
+Brant test of parallel regression assumption
+
+              |       chi2     p>chi2      df
+ -------------+------------------------------
+          All |      27.33      0.001       8
+ -------------+------------------------------
+      agehome |      11.40      0.003       2
+     1.female |       6.84      0.033       2
+     dadplans |       5.53      0.063       2
+     expenses |       1.06      0.590       2
+
+A significant test statistic provides evidence that the parallel
+regression assumption has been violated.
+
+. 
+. //END) Close the Log File and Exit Do File. 
+. log close
+      name:  <unnamed>
+       log:  C:\Users\lfh\Desktop\umich summer\categorical data\homework\assig5\
+> orm.log
+  log type:  text
+ closed on:   7 Aug 2021, 02:51:28
+--------------------------------------------------------------------------------
